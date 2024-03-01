@@ -1,0 +1,6 @@
+-Q ../bedrock2/deps/coqutil/src/coqutil coqutil
+-Q ../bedrock2/deps/riscv-coq/src/riscv riscv
+-Q ../bedrock2/bedrock2/src/bedrock2 bedrock2
+-Q ../bedrock2/compiler/src/compiler compiler
+-Q ./softmul softmul
+softmul
