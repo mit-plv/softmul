@@ -80,7 +80,6 @@ Proof.
   end.
   repeat match goal with
     | x := ?v |- _ =>
-        idtac x;
         let H := fresh "H" x in
         pose proof (eq_refl x : x = v) as H; move H before x; clearbody x; move x at top
     end.
