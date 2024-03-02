@@ -1,6 +1,6 @@
 default_target: all
 
-.PHONY: clone_all update_all bedrock2_compiler_noex softmul all clean_bedrock2 clean_softmul clean clean_deps clean_all
+.PHONY: clone_all update_all bedrock2_compiler_noex softmul all clean_bedrock2 clean_softmul run clean clean_deps clean_all
 
 clone_all:
 	git submodule update --init --recursive
@@ -26,6 +26,9 @@ softmul: bedrock2_compiler_noex
 
 clean_softmul:
 	$(MAKE) -C $(ABS_ROOT_DIR)/src clean
+
+run: softmul
+	$(MAKE) -C $(ABS_ROOT_DIR)/run
 
 all: bedrock2_compiler_noex softmul
 
