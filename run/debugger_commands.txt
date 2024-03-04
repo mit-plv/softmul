@@ -1,0 +1,4 @@
+until mem 0 0x8000004 1
+mem 0 0x8000000
+reg 0 minstret
+q
