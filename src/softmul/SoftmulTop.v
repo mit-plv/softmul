@@ -204,11 +204,11 @@ Proof.
     listZnWords.
 Qed.
 
-Lemma softmul_correct: forall initialH initialL post,
-    runsTo (mcomp_sat (run1 mdecode)) initialH post ->
-    R initialH initialL ->
-    runsTo (mcomp_sat (run1 idecode)) initialL (fun finalL =>
-               exists finalH, R finalH finalL /\ post finalH).
+Theorem softmul_correct: forall (initialH initialL: MachineState) (post: State -> Prop),
+  runsTo (mcomp_sat (run1 mdecode)) initialH post ->
+  R initialH initialL ->
+  runsTo (mcomp_sat (run1 idecode)) initialL (fun finalL =>
+            exists finalH, R finalH finalL /\ post finalH).
 Proof.
   intros.
   eapply R_equiv_related in H0.

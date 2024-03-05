@@ -152,9 +152,8 @@ Section WithRegisterNames.
     Jal ra (Z.of_nat (1 + List.length inc_mepc + 29 + List.length handler_final) * 4)
   ]].
 
-  Definition asm_handler_insts :=
-    handler_init ++ save_regs3to31 ++ call_mul ++ inc_mepc ++
-       restore_regs3to31 ++ handler_final.
+  Definition asm_handler_insts := handler_init ++ save_regs3to31 ++
+    call_mul ++ inc_mepc ++ restore_regs3to31 ++ handler_final.
 
   Definition handler_insts := asm_handler_insts ++ mul_insts.
 End WithRegisterNames.
