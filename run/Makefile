@@ -42,9 +42,9 @@ dump_%: %
 MEM_LAYOUT?='-m0x10000:0x10000,0x8000000:0x10000,0x9000000:0x3000'
 
 run_%_IM: %.elf debugger_commands.txt
-	spike -d --debug-cmd=debugger_commands.txt --isa=RV32IM  $(MEM_LAYOUT) $<
+	spike -d --debug-cmd=debugger_commands.txt --isa=RV32IM $(MEM_LAYOUT) $<
 
 run_%_I: %.elf debugger_commands.txt
-	spike -d --debug-cmd=debugger_commands.txt --isa=RV32I  $(MEM_LAYOUT) $<
+	spike -d --debug-cmd=debugger_commands.txt --isa=RV32I $(MEM_LAYOUT) $<
 
-all: handler.o
+all: run_factorial_IM run_factorial_I

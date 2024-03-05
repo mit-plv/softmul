@@ -30,7 +30,7 @@ clean_softmul:
 run: softmul
 	$(MAKE) -C $(ABS_ROOT_DIR)/run
 
-all: bedrock2_compiler_noex softmul
+all: bedrock2_compiler_noex softmul run
 
 clean: clean_softmul
 
