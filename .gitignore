@@ -25,3 +25,5 @@ Makefile.coq*
 __pycache__
 
 /.dir-locals.el
+
+/loc.tex

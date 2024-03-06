@@ -1,0 +1,13 @@
+#=RISC-V
+src/softmul/MetricMinimalNoMul.v
+src/softmul/MinimalNoMul.v
+#=Multiplication in Bedrock2
+src/softmul/rpmul.v
+#=Instruction decoder in Bedrock2
+src/softmul/SoftmulBedrock2.v
+#=Trap handler in assembly
+src/softmul/Softmul.v
+#=Compiler compat & invocation
+src/softmul/SoftmulCompile.v
+#=Toplevel theorem
+src/softmul/SoftmulTop.v
