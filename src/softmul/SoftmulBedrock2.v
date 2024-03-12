@@ -1,3 +1,4 @@
+(*tag:importboilerplate*)
 Require Import ZArith coqutil.Z.div_mod_to_equations.
 Require Import bedrock2.NotationsCustomEntry.
 Import Syntax BinInt String List.ListNotations ZArith.
@@ -5,6 +6,7 @@ Require Import coqutil.Z.Lia.
 Require Import softmul.rpmul.
 Local Open Scope string_scope. Local Open Scope Z_scope. Local Open Scope list_scope.
 
+(*tag:code*)
 Definition softmul := func! (inst, a_regs) {
   a = a_regs + (inst>>$15 & $31)<<$2;
   b = a_regs + (inst>>$20 & $31)<<$2;
@@ -13,12 +15,14 @@ Definition softmul := func! (inst, a_regs) {
   store(d, c)
 }.
 
+(*tag:importboilerplate*)
 From bedrock2 Require Import Semantics BasicC32Semantics WeakestPrecondition ProgramLogic.
 From coqutil Require Import Word.Properties Word.Interface Tactics.letexists.
 Require Import riscv.Spec.Decode riscv.Utility.Utility.
 Require Import bedrock2.SepAutoArray bedrock2.SepAutoExports.
 Open Scope bool_scope.
 
+(*tag:spec*)
 (* like (decode RV32I), but additionally also accepts the Mul instruction
    (but no other instructions from the M extension) *)
 Definition mdecode(inst: Z): Instruction :=
@@ -49,6 +53,7 @@ Definition idecode: Z -> Instruction := decode RV32I.
                (List.nth (Z.to_nat rs2) regvals default)) : word_array) R m'
  }.
 
+(*tag:proof*)
 Lemma decode_RV32I_not_MInstruction i mi : decode RV32I i <> MInstruction mi.
 Proof.
   cbv beta delta [decode].

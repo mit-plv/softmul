@@ -1,3 +1,4 @@
+(*tag:importboilerplate*)
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.PropExtensionality.
@@ -21,6 +22,7 @@ Import MetricRiscvMachine.
 Local Open Scope Z_scope.
 Local Open Scope bool_scope.
 
+(*tag:administrivia*)
 Section Riscv.
   Import List.
   Import free.
@@ -31,6 +33,7 @@ Section Riscv.
 
   Local Notation M := (free riscv_primitive primitive_result).
 
+  (*tag:spec*)
   Definition metrics_of(p: riscv_primitive): MetricLog -> MetricLog :=
     match p with
     | GetRegister a => id
@@ -63,6 +66,7 @@ Section Riscv.
       (fun r mach => post r (mkMetricRiscvMachine mach (metrics_of p m.(getMetrics))))
       (fun _ => False).
 
+  (*tag:proof*)
   Arguments Memory.load_bytes: simpl never.
   Arguments Memory.store_bytes: simpl never.
   Arguments LittleEndian.combine: simpl never.

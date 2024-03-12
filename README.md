@@ -15,7 +15,7 @@ whose output should be empty (it lists all .v files that recursive `find` finds 
 Then, run
 
 ```
-python loc/allcount.py < loc/all-files.txt
+python3 loc/allcount.py < loc/all-files.txt
 ```
 
 which parses the annotations like eg `(*tag:proof*)` or `(*tag:obvious*)`, and whenever it encounters such a tag, it changes the line counter to be incremented.

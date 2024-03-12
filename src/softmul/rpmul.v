@@ -1,15 +1,18 @@
+(*tag:doc*)
 (* "Russian Peasant Multiplication", copied from bedrock2Examples so that
    we don't need to build all of bedrock2Examples *)
-
+(*tag:importboilerplate*)
 Require Import ZArith coqutil.Z.div_mod_to_equations.
 Require Import bedrock2.NotationsCustomEntry.
 Import Syntax BinInt String List.ListNotations ZArith.
 Require Import coqutil.Z.Lia.
 Local Open Scope string_scope. Local Open Scope Z_scope. Local Open Scope list_scope.
 
+(*tag:doc*)
 (* Variant of "ipow" implementing multiplication in terms of addition instead
 * of exponentiation in terms of multiplication. *)
 
+(*tag:code*)
 Definition rpmul := func! (x, e) ~> ret {
   ret = $0;
   while (e) {
@@ -19,15 +22,18 @@ Definition rpmul := func! (x, e) ~> ret {
   }
 }.
 
+(*tag:importboilerplate*)
 From bedrock2 Require Import Semantics BasicC32Semantics WeakestPrecondition ProgramLogic.
 From coqutil Require Import Word.Properties Word.Interface Tactics.letexists.
 
+(*tag:spec*)
 #[export] Instance spec_of_rpmul : spec_of "rpmul" := fnspec! "rpmul" x e ~> v,
   { requires t m := True;
     ensures t' m' := t=t' /\ m=m' /\
       (* TODO could be expressed as just word.mul *)
       word.unsigned v = word.unsigned x * word.unsigned e mod 2^32 }.
 
+(*tag:proof*)
 Module Z.
   Lemma mod2_nonzero x : x mod 2 <> 0 -> x mod 2 = 1.
   Proof. Z.div_mod_to_equations. blia. Qed.

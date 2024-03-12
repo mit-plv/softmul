@@ -1,3 +1,4 @@
+(*tag:importboilerplate*)
 Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith.
 Require Import riscv.Utility.Monads.
@@ -24,6 +25,7 @@ Require Import riscv.Platform.Sane.
 Local Open Scope Z_scope.
 Local Open Scope bool_scope.
 
+(*tag:administrivia*)
 Section Riscv.
   Import free.
   Context {width: Z} {BW: Bitwidth width} {word: word width} {word_ok: word.ok word}.
@@ -34,6 +36,7 @@ Section Riscv.
        morphism (word.ring_morph (word := word)),
        constants [word_cst]).
 
+  (*tag:spec*)
   Definition store(n: nat)(ctxid: SourceType) a v mach post :=
     match Memory.store_bytes n mach.(getMem) a v with
     | Some m => post (withXAddrs (invalidateWrittenXAddrs n a mach.(getXAddrs)) (withMem m mach))
@@ -112,6 +115,8 @@ Section Riscv.
     Primitives.nonmem_store _ _ _ _ _ _ := False;
     Primitives.valid_machine := no_M;
   |}.
+
+  (*tag:proof*)
 
   Lemma load_weaken_post n c a m (post1 post2:_->_->Prop)
     (H: forall r s, post1 r s -> post2 r s)

@@ -1,3 +1,4 @@
+(*tag:importboilerplate*)
 Require Import Coq.ZArith.ZArith. Local Open Scope Z_scope.
 Require Import Coq.Lists.List. Import ListNotations.
 Require Import coqutil.Word.Bitwidth32.
@@ -25,6 +26,7 @@ Require Import bedrock2.SepBulletPoints.
 Local Open Scope sep_bullets_scope. Undelimit Scope sep_scope.
 Require Import bedrock2.bottom_up_simpl.
 
+(*tag:compiletimecode*)
 Definition softmul_binary: list byte := Pipeline.instrencode handler_insts.
 
 Module PrintAssembly.
@@ -39,11 +41,13 @@ Module PrintBytes.
   Goal True. let r := eval cbv in softmul_binary in idtac (* r *). Abort.
 End PrintBytes.
 
+(*tag:administrivia*)
 Notation Registers := (Zkeyed_map BasicC32Semantics.word).
 Notation Mem := BasicC32Semantics.mem.
 Notation MachineState := (@State 32 BasicC32Semantics.word Mem Registers).
 Notation word := BasicC32Semantics.word.
 
+(*tag:spec*)
 Definition R(r1 r2: MachineState): Prop :=
   r1.(regs) = r2.(regs) /\
   r1.(pc) = r2.(pc) /\
@@ -58,6 +62,7 @@ Definition R(r1 r2: MachineState): Prop :=
        * mem_available (word.of_Z (scratch_end - 256)) (word.of_Z scratch_end)
        * ptsto_bytes (word.of_Z (mtvec_base * 4)) softmul_binary }> r2.(mem).
 
+(*tag:proof*)
 Lemma bytearray_to_instr_array: forall insts addr,
     Forall (fun i => verify i Decode.RV32I) insts ->
     iff1 (array ptsto (word.of_Z 1) addr (Pipeline.instrencode insts))
@@ -204,11 +209,13 @@ Proof.
     listZnWords.
 Qed.
 
+(*tag:spec*)
 Theorem softmul_correct: forall (initialH initialL: MachineState) (post: State -> Prop),
   runsTo (mcomp_sat (run1 mdecode)) initialH post ->
   R initialH initialL ->
   runsTo (mcomp_sat (run1 idecode)) initialL (fun finalL =>
             exists finalH, R finalH finalL /\ post finalH).
+(*tag:proof*)
 Proof.
   intros.
   eapply R_equiv_related in H0.
@@ -218,6 +225,7 @@ Proof.
   fwd. eapply R_equiv_related in H1p0. eauto.
 Qed.
 
+(*tag:doc*)
 (*
 Print Assumptions softmul_correct.
 Only two standard axioms:

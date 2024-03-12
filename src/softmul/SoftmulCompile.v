@@ -1,3 +1,4 @@
+(*tag:importboilerplate*)
 Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith. Local Open Scope Z_scope.
 Require Import Coq.Lists.List. Import ListNotations.
@@ -54,6 +55,8 @@ Section Riscv.
 
   Instance RV32I_bitwidth: FlatToRiscvCommon.bitwidth_iset 32 RV32I.
   Proof. reflexivity. Qed.
+
+  (*tag:proof*)
 
   Ltac change_if_goal :=
     match goal with
@@ -180,6 +183,8 @@ Section Riscv.
     eauto; try (exfalso; Lia.lia); try discriminate.
   Qed.
 
+  (*tag:doc*)
+
   (* To use the compiler correctness statement, we need to apply two transformation steps:
      1) Change decode from RV32IM to RV32I (lemma run1_IM_to_I)
      2) Change state representation from MetricRiscvMachine to State (with CSRs) *)
@@ -189,6 +194,8 @@ Section Riscv.
      will check it instruction-by-instruction for the compiled softmul handler program,
      in order to turn the compiler proof, which usually is about an execution on an RV32IM
      machine into a statement about an execution on an RV32I machine. *)
+
+  (*tag:proof*)
   Lemma run1_IM_to_I_run1: forall (initial: MetricRiscvMachine) post,
       Primitives.valid_machine initial ->
       GoFlatToRiscv.mcomp_sat (Run.run1 RV32IM) initial post ->
@@ -316,6 +323,7 @@ Section Riscv.
     - cbn in *. eauto.
   Qed.
 
+  (*tag:spec*)
   Definition run1(decoder: Z -> Instruction): M unit :=
     startCycle;;
     pc <- getPC;
@@ -328,6 +336,7 @@ Section Riscv.
   Definition mcomp_sat(m: M unit)(initial: State)(post: State -> Prop): Prop :=
     free.interpret (@run_primitive _ _ _ mem registers) m initial (fun tt => post) post.
 
+  (*tag:proof*)
   Lemma change_state_rep: forall (sH: MetricRiscvMachine) postH,
       runsTo (GoFlatToRiscv.mcomp_sat (Run.run1 RV32I)) sH postH ->
       sH.(getNextPc) = word.add sH.(getPc) (word.of_Z 4) ->
@@ -400,10 +409,13 @@ Section Riscv.
         fwd. rewrite <- H4p1, <- H4p2. eauto.
   Qed.
 
+  (*tag:spec*)
   Definition instr(decoder: Z -> Instruction): sep_predicate mem Instruction :=
     fun (addr: word) (inst: Instruction) =>
     ex1 (fun z => sep (addr :-> z : truncated_scalar access_size.four)
                       (emp (decoder z = inst /\ 0 <= z < 2 ^ 32))).
+
+  (*tag:proof*)
 
   Lemma instr_IM_impl1_I: forall iinst addr,
       impl1 (addr :-> IInstruction iinst : instr mdecode)
@@ -516,6 +528,8 @@ Section Riscv.
 
   Notation program d := (array (instr d) (word.of_Z 4)) (only parsing).
 
+  (*tag:compiletimecode*)
+
   Definition funimplsList := &[, softmul; rpmul.rpmul].
 
   Definition mul_insts_result :=
@@ -533,6 +547,8 @@ Section Riscv.
   Definition mul_insts_fpos: list (string * Z) :=
     Eval compute in snd (fst mul_insts_tuple).
   Definition mul_insts_req_stack: Z := Eval compute in snd (mul_insts_tuple).
+
+  (*tag:proof*)
 
   Lemma mul_insts_result_eq:
     mul_insts_result = Result.Success (mul_insts, mul_insts_fpos, mul_insts_req_stack).
@@ -654,6 +670,7 @@ Section Riscv.
     eapply softmul_ok. 1: reflexivity. eapply rpmul.rpmul_ok. reflexivity.
   Qed.
 
+  (*tag:spec*)
   Lemma mul_correct: forall initial a_regs regvals invalidIInst R (post: State -> Prop)
                             ret_addr stack_start stack_pastend rd rs1 rs2,
       word.unsigned initial.(pc) mod 4 = 0 ->
@@ -666,9 +683,11 @@ Section Riscv.
       word.unsigned (word.sub stack_pastend stack_start) mod 4 = 0 ->
       regs_initialized initial.(regs) ->
       mdecode (word.unsigned invalidIInst) = MInstruction (Mul rd rs1 rs2) ->
+      (*tag:doc*)
       (* At the time of writing, mul_insts_req_stack = 17, so 68 bytes of stack
          are sufficient, but to be more robust agains future changes in the
          handler implementation, we require a bit more stack space *)
+      (*tag:spec*)
       128 <= word.unsigned (word.sub stack_pastend stack_start) ->
       <{ * a_regs :-> regvals : word_array
          * initial.(pc) :-> mul_insts : program idecode
@@ -690,6 +709,7 @@ Section Riscv.
                             regs := newRegs
                             (* log and csrs remain the same *) }) ->
       runsTo (mcomp_sat (run1 idecode)) initial post.
+  (*tag:proof*)
   Proof.
     intros.
     match goal with

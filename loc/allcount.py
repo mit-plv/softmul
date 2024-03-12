@@ -11,17 +11,10 @@ tag2col = {
     'doc': 'doc',
 
     # tags mapped to columns in main table:
-    'code': 'implementation',
-    'compiletimecode': 'implementation',
-    'spec': 'interface',
-    'proof': 'interesting proof',
-    'loopinv': 'interesting proof',
-    'workaround': 'low-insight proof',
-    'bitvector': 'low-insight proof',
-    'symex': 'low-insight proof',
-    'obvious': 'low-insight proof',
-    'lists': 'low-insight proof',
-    'maps': 'low-insight proof'
+    'code': 'impl',
+    'compiletimecode': 'impl',
+    'spec': 'spec',
+    'proof': 'proof'
 }
 
 def maplabel(l):
@@ -79,14 +72,32 @@ def countBy(p):
         del table[k]
     return sum(v for (k,v) in items)
 
-with open('loc.tex', 'w') as f2:
+def print_table():
+    columns = ['impl', 'spec', 'proof']
+    totals = collections.defaultdict(int)
     for row in rows:
-        print(f'{row:20s} & ', end='', file=f2)
-        for column in ['implementation', 'interface', 'interesting proof', 'low-insight proof']:
+        rowtotal = 0
+        print(f'{row:32s} & ', end='')
+        for column in columns:
             c = countBy(lambda s: s == row+':'+column)
-            print(f'{c:4d} & ', end='', file=f2)
-        f2.write(' \\\\ \\hline\n')
+            rowtotal += c
+            totals[column] += c
+            print(f'{c:4d} & ', end='')
+        print(f'{rowtotal:4d} \\\\ \\hline')
+        totals['total'] += rowtotal
+    e = countBy(lambda s: s.endswith(':imports')) + countBy(lambda s: s.endswith(':doc'))
+    print(f'Excluded (imports & comments)    &      &      &      & {e:4d} \\\\ \hline')
+    totals['total'] += e
+    print(f'{"Total":32s} ', end='')
+    for column in columns + ['total']:
+        print(f'& {totals[column]:4d} ', end='')
+    print(f'\\\\ \\hline')
 
-print('code unaccounted for:')
-for k,v in table.items():
-    print (k, v)
+def print_unaccounted():
+    print('code unaccounted for:')
+    for k,v in table.items():
+        print (k, v)
+
+print_table()
+print()
+print_unaccounted()

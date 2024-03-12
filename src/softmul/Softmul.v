@@ -1,3 +1,4 @@
+(*tag:importboilerplate*)
 Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith. Local Open Scope Z_scope.
 Require Import Coq.Lists.List. Import ListNotations.
@@ -42,6 +43,7 @@ Require Import bedrock2.SepBulletPoints.
 Require Import bedrock2.bottom_up_simpl.
 Local Open Scope sep_bullets_scope. Undelimit Scope sep_scope.
 
+(*tag:proof*)
 Ltac assertZcst x :=
   let x' := rdelta x in lazymatch isZcst x' with true => idtac end.
 
@@ -105,12 +107,15 @@ Ltac cbn_MachineWidth := cbn [
 (* typeclasses eauto is for the word.ok sidecondition *)
 #[export] Hint Rewrite @word.of_Z_unsigned using typeclasses eauto : fwd_rewrites.
 
+(*tag:compiletimecode*)
 Definition regs3to31: list Z := List.unfoldn (Z.add 1) 29 3.
 
+(*tag:administrivia*)
 Section WithRegisterNames.
   Import RegisterNames PseudoInstructions.
   Import InstructionCoercions. Open Scope ilist_scope.
 
+  (*tag:compiletimecode*)
   Definition save_regs3to31 :=
     @List.map Register Instruction (fun r => Sw sp r (4 * r)) regs3to31.
   Definition restore_regs3to31 :=
@@ -118,12 +123,14 @@ Section WithRegisterNames.
 
   (* TODO write encoder (so far there's only a decoder called CSR.lookupCSR) *)
   Definition MTVal    := 835.
-  Remark MTVal_correct   : CSR.lookupCSR MTVal    = CSR.MTVal.    reflexivity. Qed.
   Definition MEPC     := 833.
-  Remark MEPC_correct    : CSR.lookupCSR MEPC     = CSR.MEPC.     reflexivity. Qed.
   Definition MScratch := 832.
+  (*tag:proof*)
+  Remark MTVal_correct   : CSR.lookupCSR MTVal    = CSR.MTVal.    reflexivity. Qed.
+  Remark MEPC_correct    : CSR.lookupCSR MEPC     = CSR.MEPC.     reflexivity. Qed.
   Remark MScratch_correct: CSR.lookupCSR MScratch = CSR.MScratch. reflexivity. Qed.
 
+  (*tag:code*)
   Definition handler_init := [[
     Csrrw sp sp MScratch;  (* swap sp and MScratch CSR *)
     Sw sp zero (-128);     (* save the 0 register (for uniformity) *)
@@ -156,6 +163,7 @@ Section WithRegisterNames.
     call_mul ++ inc_mepc ++ restore_regs3to31 ++ handler_final.
 
   Definition handler_insts := asm_handler_insts ++ mul_insts.
+(*tag:administrivia*)
 End WithRegisterNames.
 
 Section Riscv.
@@ -172,6 +180,7 @@ Section Riscv.
 
   Local Hint Mode map.map - - : typeclass_instances.
 
+  (*tag:proof*)
   Lemma ptsto_unique: forall (addr: word) (b: byte) (m1 m2: Mem),
       ptsto addr b m1 ->
       ptsto addr b m2 ->
@@ -518,6 +527,7 @@ Section Riscv.
       reflexivity.
   Qed.
 
+  (*tag:spec*)
   Definition basic_CSRFields_supported(r: State): Prop :=
     map.get r.(csrs) CSRField.MTVal <> None /\
     map.get r.(csrs) CSRField.MPP <> None /\
@@ -542,6 +552,8 @@ Section Riscv.
          * LowerPipeline.mem_available (word.of_Z (stack_hi - 256))
                                        (word.of_Z (stack_hi - 128))
          * word.of_Z (mtvec_base * 4) :-> handler_insts : program idecode }> r2.(mem).
+
+  (*tag:proof*)
 
   (* From FlatToRiscvCommon, but with arbitrary n instead of access_size,
      because we also need support for loading 8 bytes, even though there's
@@ -1144,11 +1156,13 @@ Section Riscv.
     intros; fwd; eauto 20.
   Qed.
 
+  (*tag:spec*)
   Lemma softmul_correct: forall initialH initialL post,
       runsTo (mcomp_sat (run1 mdecode)) initialH post ->
       related initialH initialL ->
       runsTo (mcomp_sat (run1 idecode)) initialL (fun finalL =>
         exists finalH, related finalH finalL /\ post finalH).
+  (*tag:proof*)
   Proof.
     intros *. intros R. revert initialL. induction R; intros. {
       apply runsToDone. eauto.
