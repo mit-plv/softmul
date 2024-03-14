@@ -1,4 +1,4 @@
-#=RISC-V
+#=RISC-V helper instance
 src/softmul/MetricMinimalNoMul.v
 src/softmul/MinimalNoMul.v
 #=Multiplication in Bedrock2
