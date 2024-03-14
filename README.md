@@ -10,6 +10,12 @@ If you obtained the code through git, make sure you also recursively cloned the 
 In the toplevel directory, run `make`, or to get some parallelism, `make -j4`.
 Warning: With too much parallelism (eg `-j8` or unrestricted `-j`), you can run out memory. On a lightly-loaded system with 16GB of RAM, `make -j4` should be safe.
 
+To run the example in the `run` directory, you also need [`spike`](https://github.com/riscv-software-src/riscv-isa-sim).
+We use version 1.1.1-dev as of commit ec3c9357ec58bdd2522eef3d7768b9276ab96b0c, but other versions probably work too.
+
+The toplevel `make` invokes all required compilation as well as the spike simulation in the `run` subdirectory, which first runs our system with a simple `factorial(5)` program with the `M` extension enabled, and then with the `M` extension disabled, so that our exception handler gets used.
+Both runs print the result (which should be `0x00000078`), followed by the CSR `minstret`, the number of retired instructions, which should be `0x00000057` in the first run where multiplication is implemented in (spike-simulated) "hardware", and considerably higher, `0x00000313`, in the second run where multiplication is implemented by our trap handler.
+
 
 ### Code Reading Guide
 
@@ -28,7 +34,7 @@ to see how execution of instructions from the I and M extension are specified.
 
 For more details about the formal RISC-V specification, we refer to the [reading guide of riscv-semantics](https://github.com/mit-plv/riscv-semantics/blob/master/READING.md) and the [ICFP'23 paper](https://doi.org/10.1145/3607833).
 
-The abstract primitives (such as `getRegister`, `setRegister`, `loadByte` etc) are *declared* in `bedrock2/deps/riscv-coq/src/riscv/Spec/Machine.v`, and *implemented* in `bedrock2/deps/riscv-coq/src/riscv/Platform/MinimalCSRs.v`: This is the definition we use in the toplevel theorem, with two different decoders (`idecode`) and (`mdecode`).
+The abstract primitives (such as `getRegister`, `setRegister`, `loadByte` etc) are *declared* in `bedrock2/deps/riscv-coq/src/riscv/Spec/Machine.v`, and *implemented* in `bedrock2/deps/riscv-coq/src/riscv/Platform/MinimalCSRs.v`: This is the definition we use in the toplevel theorem, with two different decoders (`idecode` and `mdecode`).
 
 The bedrock2 compiler is proven correct against an axiomatization of the abstract primitives (such as `getRegister`, `setRegister`, `loadByte` etc), see `bedrock2/deps/riscv-coq/src/riscv/Spec/Primitives.v`, and uses `MetricRiscvMachine` (from `bedrock2/deps/riscv-coq/src/riscv/Platform/MetricRiscvMachine.v`) as the state representation, whereas the toplevel theorem uses `State` (from `bedrock2/deps/riscv-coq/src/riscv/Platform/MinimalCSRs.v`) as its state representation.
 Moreover, the compiled exception handler code runs on a machine (`MinimalCSRs`) that invokes the exception handler when encountering a `mul` instruction, but if we are already in the handler, we must not use the `mul` instruction any more, to avoid entering the handler recursively infinitely many times.
