@@ -11,7 +11,7 @@ In the toplevel directory, run `make`, or to get some parallelism, `make -j4`.
 Warning: With too much parallelism (eg `-j8` or unrestricted `-j`), you can run out memory. On a lightly-loaded system with 16GB of RAM, `make -j4` should be safe.
 
 To run the example in the `run` directory, you also need
-* Spike(https://github.com/riscv-software-src/riscv-isa-sim). We use version 1.1.1-dev as of commit ec3c9357ec58bdd2522eef3d7768b9276ab96b0c, but other versions probably work too. See also the README in the `run` directory.
+* [Spike](https://github.com/riscv-software-src/riscv-isa-sim). We use version 1.1.1-dev as of commit ec3c9357ec58bdd2522eef3d7768b9276ab96b0c, but other versions probably work too. See also the README in the `run` directory.
 * To compile the unverified user program and compose the ELF, you need the GNU RISC-V toolchain. On Ubuntu, it can be installed with `sudo apt install gcc-riscv64-unknown-elf`.
 
 The toplevel `make` invokes all required compilation as well as the spike simulation in the `run` subdirectory, which first runs our system with a simple `factorial(5)` program with the `M` extension enabled, and then with the `M` extension disabled, so that our exception handler gets used.
