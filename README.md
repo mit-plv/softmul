@@ -10,8 +10,9 @@ If you obtained the code through git, make sure you also recursively cloned the 
 In the toplevel directory, run `make`, or to get some parallelism, `make -j4`.
 Warning: With too much parallelism (eg `-j8` or unrestricted `-j`), you can run out memory. On a lightly-loaded system with 16GB of RAM, `make -j4` should be safe.
 
-To run the example in the `run` directory, you also need [`spike`](https://github.com/riscv-software-src/riscv-isa-sim).
-We use version 1.1.1-dev as of commit ec3c9357ec58bdd2522eef3d7768b9276ab96b0c, but other versions probably work too.
+To run the example in the `run` directory, you also need
+* Spike(https://github.com/riscv-software-src/riscv-isa-sim). We use version 1.1.1-dev as of commit ec3c9357ec58bdd2522eef3d7768b9276ab96b0c, but other versions probably work too. See also the README in the `run` directory.
+* To compile the unverified user program and compose the ELF, you need the GNU RISC-V toolchain. On Ubuntu, it can be installed with `sudo apt install gcc-riscv64-unknown-elf`.
 
 The toplevel `make` invokes all required compilation as well as the spike simulation in the `run` subdirectory, which first runs our system with a simple `factorial(5)` program with the `M` extension enabled, and then with the `M` extension disabled, so that our exception handler gets used.
 Both runs print the result (which should be `0x00000078`), followed by the CSR `minstret`, the number of retired instructions, which should be `0x00000057` in the first run where multiplication is implemented in (spike-simulated) "hardware", and considerably higher, `0x00000313`, in the second run where multiplication is implemented by our trap handler.
