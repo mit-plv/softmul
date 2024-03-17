@@ -53,7 +53,7 @@ On top of the riscv-coq specification, our project adds the following components
 
 ### Checking the line number counts
 
-The lines of code numbers in the paper can be reproduced as follows.
+The lines of code of the project can be counted as follows:
 First, note that `loc/all-files.txt` assigns a category to each file.
 To check that we did not miss any file, run
 
@@ -69,4 +69,4 @@ python3 loc/allcount.py < loc/all-files.txt
 ```
 
 which parses the annotations like eg `(*tag:proof*)` or `(*tag:obvious*)`, and whenever it encounters such a tag, it changes the line counter to be incremented.
-It outputs LaTeX code for the table that appears in the paper.
+It outputs a table with line counts in LaTeX.
